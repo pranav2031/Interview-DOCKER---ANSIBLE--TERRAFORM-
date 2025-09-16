@@ -1,0 +1,83 @@
+###################
+OS Condition
+###################
+
+
+- hosts: all
+  become: true
+
+  tasks:
+  - name: install apache2 on ubuntu
+    apt: name=apache2 state=present
+    when: ansible_os_family == "Debian"
+    ignore_error: True
+
+  - name: install httpd on redhat
+    apt: name=httpd state=present
+    when: ansible_os_family == "RedHat"
+    ignore_error: True
+
+
+############################
+multiple package & OS Condition
+############################
+
+---
+- hosts: all
+  become: true
+
+  tasks:
+  - name: install multi packages on ubuntu
+    when: ansible_os_family == "Debian"
+    apt: path={{item}} state=present
+    with_items:
+    - apache2
+    - git
+    - nginx
+
+  - name: install multi packages on RedHat
+    when: ansible_os_family == "RedHat"
+    yum: path={{item}} state=present
+    with_items:
+    - httpd
+    - git
+    - nginx
+
+...
+
+    
+############################
+Handler & notify
+############################
+
+---
+- name: handle example
+  hosts: all
+  gather_facts: false
+
+  tasks:
+  - name: install httpd
+    yum:
+      name: httpd
+      state: present
+    become: true
+    notify: restart_httpd
+  
+  handlers:
+  - name: restart_httpd
+    become: true
+    service:
+      name: httpd
+      state: started
+
+
+
+
+
+
+
+
+
+
+
+

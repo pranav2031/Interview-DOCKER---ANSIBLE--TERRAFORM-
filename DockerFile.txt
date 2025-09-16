@@ -1,0 +1,33 @@
+###########################
+## Install ubuntu and nginx ##
+###########################
+
+FROM 	ubuntu:latest
+RUN 	apt-get update && apt-get install -y nginx
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+
+###########################
+## Install tomcat ##without springboot
+###########################
+
+FROM	tomcat:latest
+COPY	target/app.war	/usr/local/tomcat/webapps/app.war
+EXPOSE 	8080
+
+
+###########################
+## Install tomcat ##Springboot
+###########################
+
+FROM 	openjdk:11
+COPY	target/app.war	/usr/app/app/jar
+WORKDIR 	/usr/app
+EXPOSE		8080
+ENTRYPOINT	["java","-jar","app.jar"]
+
+
+
+
+
